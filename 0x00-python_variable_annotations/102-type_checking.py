@@ -10,7 +10,6 @@
     array = [12, 72, 91]
     zoom_2x = zoom_array(array)
     zoom_3x = zoom_array(array, 3.0) """
-
 from typing import List, Tuple
 
 
@@ -22,6 +21,9 @@ def zoom_array(lst: Tuple, factor: int = 2) -> List:
     ]
     return zoomed_in
 
-tuple = (12, 72, 91)
-zoom_2x = zoom_array(tuple)
-zoom_3x = zoom_array(tuple, 3.0)
+
+array = (12, 72, 91)
+
+zoom_2x = zoom_array(array)
+
+zoom_3x = zoom_array(array, 3)
