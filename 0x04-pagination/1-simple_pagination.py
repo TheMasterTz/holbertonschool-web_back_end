@@ -2,8 +2,6 @@
 """ Simple pagination """
 import csv
 import math
-from this import s
-from tracemalloc import start
 from typing import List
 
 
