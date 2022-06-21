@@ -19,5 +19,3 @@ def status() -> str:
 def unauthorized() -> str:
     """ endpoint to testing (unauthorized) 401 error handler """
     abort(401)
-
-
