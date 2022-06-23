@@ -1,8 +1,8 @@
 # 0x07. Session authentication
-open_file_folder: Specializations - Web Stack programming ― Back-end  
-bust_in_silhouette: by Guillaume, CTO at Holberton School  
-copyright: **[Holberton School](https://www.holbertonschool.com/)**  
-bookmark:
+:open_file_folder: Specializations - Web Stack programming ― Back-end  
+:bust_in_silhouette: by Guillaume, CTO at Holberton School  
+:copyright: **[Holberton School](https://www.holbertonschool.com/)**  
+:bookmark:
 
 ## Background Context
 In this project, you will implement a Session Authentication. You are not allowed to install any other module.

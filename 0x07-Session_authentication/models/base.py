@@ -25,20 +25,22 @@ class Base():
 
         self.id = kwargs.get('id', str(uuid.uuid4()))
         if kwargs.get('created_at') is not None:
-            self.created_at = datetime.strptime(
-                kwargs.get('created_at'), TIMESTAMP_FORMAT)
+            self.created_at = datetime.strptime(kwargs.get('created_at'),
+                                                TIMESTAMP_FORMAT)
         else:
             self.created_at = datetime.utcnow()
         if kwargs.get('updated_at') is not None:
-            self.updated_at = datetime.strptime(
-                kwargs.get('updated_at'), TIMESTAMP_FORMAT)
+            self.updated_at = datetime.strptime(kwargs.get('updated_at'),
+                                                TIMESTAMP_FORMAT)
         else:
             self.updated_at = datetime.utcnow()
 
     def __eq__(self, other: TypeVar('Base')) -> bool:
         """ Equality
         """
-        if type(self) != type(other) or not isinstance(self, Base):
+        if type(self) != type(other):
+            return False
+        if not isinstance(self, Base):
             return False
         return (self.id == other.id)
 
@@ -49,7 +51,7 @@ class Base():
         for key, value in self.__dict__.items():
             if not for_serialization and key[0] == '_':
                 continue
-            elif type(value) is datetime:
+            if type(value) is datetime:
                 result[key] = value.strftime(TIMESTAMP_FORMAT)
             else:
                 result[key] = value
@@ -124,7 +126,6 @@ class Base():
         """ Search all objects with matching attributes
         """
         s_class = cls.__name__
-
         def _search(obj):
             if len(attributes) == 0:
                 return True
@@ -132,5 +133,5 @@ class Base():
                 if (getattr(obj, k) != v):
                     return False
             return True
-
+        
         return list(filter(_search, DATA[s_class].values()))

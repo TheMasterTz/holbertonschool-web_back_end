@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """ Module of Users views
 """
-from ast import Try
-from ftplib import all_errors
-from wsgiref.util import request_uri
 from api.v1.views import app_views
 from flask import abort, jsonify, request
 from models.user import User
@@ -13,13 +10,14 @@ from models.user import User
 def view_all_users() -> str:
     """ GET /api/v1/users
     Return:
-        - list of all User objects JSON represented
+      - list of all User objects JSON represented
     """
-    return jsonify([user.to_json() for user in User.all()])
+    all_users = [user.to_json() for user in User.all()]
+    return jsonify(all_users)
 
 
 @app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
-def view_one_user(user_id):
+def view_one_user(user_id: str = None) -> str:
     """ GET /api/v1/users/:id
     Path parameter:
       - User ID
@@ -27,88 +25,16 @@ def view_one_user(user_id):
       - User object JSON represented
       - 404 if the User ID doesn't exist
     """
-
-    if user_id is None:
+    if user_id == 'me' and request.current_user is None:
         abort(404)
-    elif user_id == 'me' and request.current_user is None:
-        abort(404)
-    elif user_id == 'me' and request.current_user is not None:
+    if user_id == 'me' and request.current_user:
         return jsonify(request.current_user.to_json())
-    else:
-        user = User.get(user_id)
-        if user is None:
-            abort(404)
-        return jsonify(user.to_json())
-
-
-@app_views.route('/users', methods=['POST'], strict_slashes=False)
-def create_user() -> str:
-    """ POST /api/v1/users/
-    JSON body:
-      - email
-      - password
-      - last_name (optional)
-      - first_name (optional)
-    Return:
-      - User object JSON represented
-      - 400 if can't create the new User
-    """
-    rj = None
-    err_msg = None
-    try:
-        rj = request.get_json()
-
-        if rj.get("email", "") == "":
-            err_msg = "email missing"
-        elif rj.get("password", "") == "":
-            err_msg = "password missing"
-        else:
-            try:
-                user = User()
-                user.email = rj.get("email")
-                user.password = rj.get("password")
-                user.first_name = rj.get("first_name")
-                user.last_name = rj.get("last_name")
-                user.save()
-                return jsonify(user.to_json()), 201
-            except Exception as e:
-                err_msg = "Can't create User: {}".format(e)
-    except Exception as e:
-        err_msg = "Wrong format"
-
-    return jsonify({'error': err_msg}), 400
-
-
-@app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
-def update_user(user_id: str = None) -> str:
-    """ PUT /api/v1/users/:id
-    Path parameter:
-      - User ID
-    JSON body:
-      - last_name (optional)
-      - first_name (optional)
-    Return:
-      - User object JSON represented
-      - 404 if the User ID doesn't exist
-      - 400 if can't update the User
-    """
     if user_id is None:
         abort(404)
-
     user = User.get(user_id)
     if user is None:
         abort(404)
-    rj = None
-    try:
-        rj = request.get_json()
-        if rj.get('first_name') is not None:
-            user.first_name = rj.get('first_name')
-        elif rj.get('last_name') is not None:
-            user.last_name = rj.get('last_name')
-        user.save()
-        return jsonify(user.to_json()), 200
-    except Exception as e:
-        return jsonify({'error': "Wrong format"}), 400
+    return jsonify(user.to_json())
 
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
@@ -127,3 +53,74 @@ def delete_user(user_id: str = None) -> str:
         abort(404)
     user.remove()
     return jsonify({}), 200
+
+
+@app_views.route('/users', methods=['POST'], strict_slashes=False)
+def create_user() -> str:
+    """ POST /api/v1/users/
+    JSON body:
+      - email
+      - password
+      - last_name (optional)
+      - first_name (optional)
+    Return:
+      - User object JSON represented
+      - 400 if can't create the new User
+    """
+    rj = None
+    error_msg = None
+    try:
+        rj = request.get_json()
+    except Exception as e:
+        rj = None
+    if rj is None:
+        error_msg = "Wrong format"
+    if error_msg is None and rj.get("email", "") == "":
+        error_msg = "email missing"
+    if error_msg is None and rj.get("password", "") == "":
+        error_msg = "password missing"
+    if error_msg is None:
+        try:
+            user = User()
+            user.email = rj.get("email")
+            user.password = rj.get("password")
+            user.first_name = rj.get("first_name")
+            user.last_name = rj.get("last_name")
+            user.save()
+            return jsonify(user.to_json()), 201
+        except Exception as e:
+            error_msg = "Can't create User: {}".format(e)
+    return jsonify({'error': error_msg}), 400
+
+
+@app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
+def update_user(user_id: str = None) -> str:
+    """ PUT /api/v1/users/:id
+    Path parameter:
+      - User ID
+    JSON body:
+      - last_name (optional)
+      - first_name (optional)
+    Return:
+      - User object JSON represented
+      - 404 if the User ID doesn't exist
+      - 400 if can't update the User
+    """
+    if user_id is None:
+        abort(404)
+    user = User.get(user_id)
+    if user is None:
+        abort(404)
+    rj = None
+    try:
+        rj = request.get_json()
+    except Exception as e:
+        rj = None
+    if rj is None:
+        return jsonify({'error': "Wrong format"}), 400
+    if rj.get('first_name') is not None:
+        user.first_name = rj.get('first_name')
+    if rj.get('last_name') is not None:
+        user.last_name = rj.get('last_name')
+    user.save()
+    return jsonify(user.to_json()), 200

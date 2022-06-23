@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ Module of Index views
 """
 from flask import jsonify, abort
@@ -8,14 +9,14 @@ from api.v1.views import app_views
 def status() -> str:
     """ GET /api/v1/status
     Return:
-        - the status of the API
+      - the status of the API
     """
-    return jsonify({'status': 'OK'})
+    return jsonify({"status": "OK"})
 
 
 @app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
 def unauthorized() -> str:
-    """endpoint to testing (unauthorized) 401 error handler"""
+    """ endpoint to testing (unauthorized) 401 error handler """
     abort(401)
 
 
@@ -29,7 +30,7 @@ def forbidden() -> str:
 def stats() -> str:
     """ GET /api/v1/stats
     Return:
-        - the number of each objects
+      - the number of each objects
     """
     from models.user import User
     stats = {}
