@@ -12,12 +12,15 @@ def login() -> str:
     u_email = request.form.get('email')
     if not u_email:
         return jsonify({"error": "email missing"}), 400
+
     u_password = request.form.get('password')
     if not u_password:
         return jsonify({"error": "password missing"}), 400
+
     user = User.search({'email': u_email})
     if not user:
         return jsonify({"error": "no user found for this email"}), 404
+
     for u in user:
         if u.is_valid_password(u_password):
             from api.v1.app import auth
