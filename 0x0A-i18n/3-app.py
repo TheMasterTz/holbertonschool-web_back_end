@@ -2,11 +2,10 @@
 """ Basic Flask app, Basic Babel setup, Get locale from request,
     Parametrize templates """
 from flask import Flask, render_template, request
-from flask_babel import Babel, gettext
+from flask_babel import Babel
 
 app = Flask(__name__)
 babel = Babel(app)
-""" instantiate the Babel object """
 
 
 class Config(object):
