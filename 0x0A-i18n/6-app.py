@@ -18,8 +18,9 @@ users = {
 
 
 class Config(object):
-    """ config class """
+    """ Babel configuration """
     LANGUAGES = ['en', 'fr']
+    # these are the inherent defaults just btw
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
 
