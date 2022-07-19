@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ Writing strings to Redis, Reading from Redis and recovering original type,
     Incrementing values, Storing lists, Retrieving lists """
-from typing import Union, Callable, Optional, Any
+from typing import Union, Callable, Optional
 import redis
 import uuid
 from functools import wraps
@@ -65,6 +65,15 @@ class Cache:
     def get_str(self, key: str) -> str:
         """ automatically parametrize Cache.get to str """
         return self._redis.get(key).decode('utf-8')
+
+    def get_int(self, key: str) -> int:
+        """ automatically parametrize Cache.get to int """
+        data = self._redis.get(key)
+        try:
+            data = int(value.decode("utf-8"))
+        except Exception:
+            data = 0
+        return data
 
 
 def replay(method: Callable):
